@@ -1,10 +1,13 @@
 # databricks_analytics
 
+This is a place to learn Databricks.
+
 ## About
 
 This repository is used to learn Databricks.
 
-Topics:
+## Topics
+
 - Databricks notebooks
 - SQL
 - PySpark
