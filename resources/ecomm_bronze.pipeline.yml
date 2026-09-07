@@ -6,7 +6,7 @@
 # 5 dimension đã CHUYỂN ra khỏi pipeline này — xem
 # src/ecomm_etl/scripts/refresh_bronze_dimensions.py (Delta Table + Job,
 # vì đó là data "export lại toàn bộ" mỗi lần, không hợp Streaming Table).
-# Xem docs/roadmap/phase-1-track2-ecommerce-project.md.
+# Xem docs/roadmap/phase-1-ecommerce.md.
 
 resources:
   pipelines:

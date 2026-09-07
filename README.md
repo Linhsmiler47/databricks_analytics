@@ -20,16 +20,15 @@ This repo is a Databricks Asset Bundle (generated via `databricks bundle init de
 
 - `src/`: Python source code for this project.
   - `src/my_project/`: Shared Python code used by jobs and pipelines.
-  - `src/my_project_etl/`: Lakeflow pipeline transformations — `nyctaxi` demo + `customers` CDC/SCD2 case study (Track 1, catalog `workspace`).
-  - `src/ecomm_etl/`: Lakeflow pipeline transformations cho e-commerce project (Track 2, catalog-per-env `ecomm_dev`/`ecomm_staging`/`ecomm_prod`) — `transformations/bronze|silver|gold/`.
-- `resources/`: Resource configurations (jobs, pipelines, etc.) — `sample_job`/`my_project_etl` (Track 1) và `ecomm_job`/`ecomm_bronze|silver|gold_pipeline` (Track 2).
+  - `src/my_project_etl/`: Lakeflow pipeline transformations — `nyctaxi` demo (catalog `workspace`, verify setup cơ bản).
+  - `src/ecomm_etl/`: Project chính — e-commerce (catalog-per-env `ecomm_dev`/`ecomm_staging`/`ecomm_prod`) — `transformations/bronze|gold/` (Lakeflow) + `scripts/` (plain Delta Table + Job, xem [docs/lessons/fundamentals/13-delta-table-job-vs-lakeflow.md](docs/lessons/fundamentals/13-delta-table-job-vs-lakeflow.md)).
+- `resources/`: Resource configurations (jobs, pipelines, etc.) — `sample_job`/`my_project_etl` (demo `nyctaxi`) và `ecomm_job`/`ecomm_bronze|gold_pipeline` (project chính).
 - `tests/`: Unit tests for the shared Python code.
 - `fixtures/`: Sample/test data sets.
-  - `fixtures/cdc_demo/` — `customers.csv` (bạn tự tay edit, ít dòng) + `snapshots/` lịch sử chốt — bài tập CDC/SCD2, cố tình nhỏ để tự soi từng dòng.
-  - `fixtures/ecomm_raw/` — dataset e-commerce thật (star schema: brands/category/date/products/customers + order_items dạng landing 92 file/ngày, ~26MB, `customers.csv` đã lọc chỉ giữ ID có trong order_items) — dùng cho bài tập quy mô lớn hơn (Auto Loader nhiều file thật, star-schema join, data cleaning trên data có lỗi định dạng thật). **Không thay thế** `cdc_demo`.
-- `scripts/`: Script tiện ích chạy local (không deploy lên Databricks) — `seed_cdc_sample_data.py`/`snapshot_customers.py` (bài tập CDC nhỏ) và `import_ecomm_raw_data.py` (copy + lọc dataset e-commerce từ nguồn ngoài repo).
-- `databricks.yml`: Bundle definition (targets: `dev`, `staging`, `prod`; biến `catalog`/`schema` cho Track 1, `ecomm_catalog` cho Track 2).
-- `docs/`: xem [docs/INDEX.md](docs/INDEX.md) — kiến trúc, lessons, roadmap học, setup history.
+  - `fixtures/ecomm_raw/` — dataset e-commerce thật (star schema: brands/category/date/products/customers + order_items dạng landing 92 file/ngày, ~26MB, `customers.csv` đã lọc chỉ giữ ID có trong order_items).
+- `scripts/`: Script tiện ích chạy local (không deploy lên Databricks) — `import_ecomm_raw_data.py` (copy + lọc dataset e-commerce từ nguồn ngoài repo).
+- `databricks.yml`: Bundle definition (targets: `dev`, `staging`, `prod`; biến `catalog`/`schema` cho demo `nyctaxi`, `ecomm_catalog` cho e-commerce).
+- `docs/`: xem [docs/INDEX.md](docs/INDEX.md) — setup, kiến trúc, lessons, roadmap học.
 
 ## Getting started
 

@@ -28,6 +28,5 @@ Git Folder chỉ thật sự hữu ích cho:
 ## Áp dụng vào project
 
 Với hướng đi hiện tại (bundle + CLI + sau này CI/CD), **không cần** Add Git
-Folder. Toàn bộ workflow deploy trong
-[roadmap/phase-1-track1-cdc-demo.md mục 1.1](../../roadmap/phase-1-track1-cdc-demo.md)
+Folder. Toàn bộ workflow deploy trong [../../setup.md](../../setup.md)
 không đụng tới Git Folder ở bất kỳ bước nào.

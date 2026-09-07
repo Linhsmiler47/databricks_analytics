@@ -15,7 +15,7 @@ import argparse
 
 from delta.tables import DeltaTable
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, lower, regexp_replace, round as spark_round, to_date, trim, upper
+from pyspark.sql.functions import col, expr, lower, regexp_replace, round as spark_round, to_date, trim, upper
 
 
 def refresh_dimensions(spark, catalog: str):
@@ -28,13 +28,24 @@ def refresh_dimensions(spark, catalog: str):
         .withColumn("brand_code", lower(regexp_replace(trim(col("brand_code")), "[^A-Za-z0-9]", "")))
         .withColumn("brand_name", trim(col("brand_name")))
         .withColumn("category_code", lower(trim(col("category_code"))))
+        # Bug 10 (phòng ngừa): dropDuplicates theo khóa nghiệp vụ — Silver
+        # là "đã làm sạch", không nên còn dòng trùng dù join có tự dedupe
+        # riêng hay không. Nguồn dùng làm bằng chứng: xem category bên dưới.
+        .dropDuplicates(["brand_code"])
     )
     brands.write.mode("overwrite").saveAsTable(f"{catalog}.silver.silver_brands")
 
+    # Bug 10 (thật, đã tìm thấy khi MERGE fail với
+    # DELTA_MULTIPLE_SOURCE_ROW_MATCHING_TARGET_ROW_IN_MERGE): bronze_category
+    # có dòng TRÙNG LẶP y hệt trong CSV gốc (vd "app"/"Apparel" xuất hiện 2
+    # lần) — dropDuplicates ngay tại đây, không chỉ ở chỗ join, vì
+    # silver_category tự nó phải sạch (ai query trực tiếp bảng này cũng
+    # không nên thấy dòng trùng).
     category = (
         spark.read.table(f"{catalog}.bronze.bronze_category")
         .withColumn("category_code", lower(trim(col("category_code"))))
         .withColumn("category_name", trim(col("category_name")))
+        .dropDuplicates(["category_code"])
     )
     category.write.mode("overwrite").saveAsTable(f"{catalog}.silver.silver_category")
 
@@ -64,6 +75,7 @@ def refresh_dimensions(spark, catalog: str):
         .withColumn("brand_code", lower(trim(col("brand_code"))))
         .withColumn("category_code", lower(trim(col("category_code"))))
         .withColumn("rating_count", col("rating_count").cast("int"))
+        .dropDuplicates(["product_id"])  # phòng ngừa, cùng lý do Bug 10
     )
     products.write.mode("overwrite").saveAsTable(f"{catalog}.silver.silver_products")
 
@@ -72,22 +84,58 @@ def refresh_dimensions(spark, catalog: str):
 
 
 def refresh_order_items(spark, catalog: str):
-    # Bug 7 (discount_pct "10%") + tính line_total + join star-schema.
+    # Bug 7 (discount_pct "10%"). Bug 8 (quantity có giá trị chữ, vd "Two"
+    # thay vì 2 — 33,138/183,378 dòng, ~18%!). Bug 9 (unit_price có ký hiệu
+    # tiền tệ, vd "$864"). Cả 3 cột số đều không tin tưởng được — plain
+    # .cast() CHẾT CỨNG cả job ngay dòng đầu tiên gặp rác. Dùng chung 1 rule
+    # phòng thủ: bóc hết ký tự không phải số/dấu chấm/trừ rồi try_cast, lọc
+    # bỏ dòng nào sau cùng vẫn NULL (không đoán mò giá trị thay thế).
+    def _clean_numeric(colname: str):
+        return expr(f"try_cast(regexp_replace({colname}, '[^0-9.-]', '') AS DOUBLE)")
+
+    raw_order_items = spark.read.table(f"{catalog}.bronze.bronze_order_items")
+    total_rows = raw_order_items.count()
     order_items = (
-        spark.read.table(f"{catalog}.bronze.bronze_order_items")
+        raw_order_items
         .withColumn("order_date", to_date(col("dt")))
-        .withColumn("quantity", col("quantity").cast("int"))
-        .withColumn("unit_price", col("unit_price").cast("double"))
-        .withColumn("discount_pct", regexp_replace(col("discount_pct"), "%", "").cast("double") / 100)
-        .withColumn("tax_amount", col("tax_amount").cast("double"))
+        .withColumn("quantity", expr("try_cast(quantity AS INT)"))
+        .withColumn("unit_price", _clean_numeric("unit_price"))
+        .withColumn("discount_pct", _clean_numeric("regexp_replace(discount_pct, '%', '')") / 100)
+        .withColumn("tax_amount", _clean_numeric("tax_amount"))
+    )
+    required = ["quantity", "unit_price", "discount_pct", "tax_amount"]
+    order_items_clean = order_items.na.drop(subset=required)
+    dropped = total_rows - order_items_clean.count()
+    if dropped:
+        print(f"WARNING: loại {dropped}/{total_rows} dòng order_items có cột số hỏng (quantity/unit_price/discount_pct/tax_amount không parse được)")
+    order_items = (
+        order_items_clean
         .withColumn(
             "line_total",
             spark_round(col("quantity") * col("unit_price") * (1 - col("discount_pct")) + col("tax_amount"), 2),
         )
     )
-    products = spark.read.table(f"{catalog}.silver.silver_products").select("product_id", "brand_code", "category_code")
-    brands = spark.read.table(f"{catalog}.silver.silver_brands").select("brand_code", "brand_name")
-    category = spark.read.table(f"{catalog}.silver.silver_category").select("category_code", "category_name")
+    # Bug 10: bronze_category có DÒNG TRÙNG LẶP y hệt (vd "app"/"Apparel"
+    # xuất hiện 2 lần trong CSV gốc) — join bình thường sẽ nhân đôi dòng
+    # order_items khớp category đó, làm MERGE bên dưới fail với
+    # DELTA_MULTIPLE_SOURCE_ROW_MATCHING_TARGET_ROW_IN_MERGE. dropDuplicates
+    # theo khóa nghiệp vụ trước khi join — áp phòng ngừa cho cả 3 dimension,
+    # không chỉ category (rẻ, an toàn, chặn đứng cả lớp bug này).
+    products = (
+        spark.read.table(f"{catalog}.silver.silver_products")
+        .select("product_id", "brand_code", "category_code")
+        .dropDuplicates(["product_id"])
+    )
+    brands = (
+        spark.read.table(f"{catalog}.silver.silver_brands")
+        .select("brand_code", "brand_name")
+        .dropDuplicates(["brand_code"])
+    )
+    category = (
+        spark.read.table(f"{catalog}.silver.silver_category")
+        .select("category_code", "category_name")
+        .dropDuplicates(["category_code"])
+    )
 
     enriched = (
         order_items.join(products, on="product_id", how="left")

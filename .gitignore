@@ -8,3 +8,6 @@ scratch/**
 !scratch/README.md
 **/explorations/**
 **/!explorations/README.md
+
+.claude/scheduled_tasks.lock
+.claude/settings.local.json

@@ -17,28 +17,36 @@ thật duy nhất: **không tự mang cloud storage của bạn** (ADLS Gen2/S3 
 
 | Phase | Trạng thái | Chi tiết |
 |---|---|---|
-| **Phase 1 · Track 1** — CDC/SCD2 (`customers`) | 🟡 Đang làm | [phase-1-track1-cdc-demo.md](phase-1-track1-cdc-demo.md) |
-| **Phase 1 · Track 2** — E-commerce (catalog-per-env) | 🟢 Bronze/Silver/Gold đã deploy + chạy thật thành công | [phase-1-track2-ecommerce-project.md](phase-1-track2-ecommerce-project.md) |
+| **Phase 1** — E-commerce (catalog-per-env) | 🟢 Đã build + deploy + verify chạy thật ổn định (nhiều vòng fix) | [phase-1-ecommerce.md](phase-1-ecommerce.md) |
 | **Phase 2** — Storage thật | ⚪ Chưa bắt đầu | [phase-2-trial-security.md](phase-2-trial-security.md) |
 
 Vòng lặp sửa code hằng ngày (không phải kế hoạch, mà là quy trình lặp lại
-mỗi khi code thay đổi): [dev-workflow.md](../dev-workflow.md).
+mỗi khi code thay đổi): [dev-workflow.md](../dev-workflow.md). Setup 1 lần
+từ máy trắng: [setup.md](../setup.md).
 
-## Phase 1 — Free Edition (~90% thời gian) — 2 track song song
+## Phase 1 — Free Edition (~90% thời gian)
 
-1. **Track 1 — CDC/SCD2** (`fixtures/cdc_demo/`) — case study nhỏ, tự tay
-   edit CSV, luyện Bronze/Silver/Gold + Auto Loader + AUTO CDC + SCD Type 2.
-2. **Track 2 — E-commerce** (`fixtures/ecomm_raw/`) — dataset thật (star
-   schema: brands/category/date/products/customers/order_items, 183K dòng
-   order_items thật), dùng **catalog-per-environment**
-   (`ecomm_dev`/`ecomm_staging`/`ecomm_prod`) + GRANT/REVOKE + Row Filter +
-   Column Mask — **tất cả làm được trên Free Edition**, không cần đợi
-   Phase 2. Bronze/Silver/Gold đã build, deploy, chạy thật thành công —
-   kèm 7 lỗi data thật đã tìm và fix (xem
-   [phase-1-track2-ecommerce-project.md](phase-1-track2-ecommerce-project.md)).
+**E-commerce project** (`fixtures/ecomm_raw/`) — dataset thật (star
+schema: brands/category/date/products/customers/order_items, 183K dòng
+order_items thật), dùng **catalog-per-environment**
+(`ecomm_dev`/`ecomm_staging`/`ecomm_prod`) + GRANT/REVOKE + Row Filter +
+Column Mask (qua ABAC) — **tất cả làm được trên Free Edition**, không cần
+đợi Phase 2. Đã build, deploy, verify chạy thật ổn định qua nhiều vòng
+lặp fix — 10 lỗi data thật đã tìm và fix (xem
+[phase-1-ecommerce.md](phase-1-ecommerce.md)).
 
-Cả 2 track dùng chung kỹ năng nền: PySpark, Medallion, parameterization,
-data quality, orchestration, testing.
+Chạy song song với demo `nyctaxi` có sẵn từ template (`sample_job`,
+xem [architecture.md](../architecture.md)) — dùng để verify setup cơ bản,
+không phải bài tập chính.
+
+Kỹ năng nền dùng xuyên suốt: PySpark, Medallion, parameterization, data
+quality, orchestration, testing.
+
+> ℹ️ Trước đây có thêm 1 track nhỏ (CDC/SCD2 với data `customers` tự edit
+> tay) — đã **gỡ bỏ** vì e-commerce project đã đủ end-to-end, không cần
+> case study song song nữa. Khái niệm SCD Type 2/snapshot-diff CDC học
+> được từ đó vẫn còn trong [lessons/](../lessons/INDEX.md), chỉ không còn
+> ví dụ chạy thật trong repo.
 
 ## Phase 2 — Storage thật (Premium trial 14 ngày, ~10% thời gian)
 

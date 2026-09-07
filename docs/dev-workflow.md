@@ -1,10 +1,8 @@
 # Dev workflow — vòng lặp phát triển hằng ngày
 
 Đây là **quy trình lặp lại** mỗi khi bạn sửa code và muốn đưa lên workspace
-kiểm tra — khác với setup ban đầu (mục 1.1 trong
-[roadmap/phase-1-track1-cdc-demo.md](roadmap/phase-1-track1-cdc-demo.md), chỉ
-chạy 1 lần) và [roadmap/OVERVIEW.md](roadmap/OVERVIEW.md) (planning cấp
-cao, không có lệnh).
+kiểm tra — khác với setup ban đầu ([setup.md](setup.md), chỉ chạy 1 lần) và
+[roadmap/OVERVIEW.md](roadmap/OVERVIEW.md) (planning cấp cao, không có lệnh).
 
 ## 1. Cài/đồng bộ dependencies local (khi `pyproject.toml` đổi)
 

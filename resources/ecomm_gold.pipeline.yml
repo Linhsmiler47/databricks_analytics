@@ -1,7 +1,7 @@
-# Gold pipeline for the e-commerce project (Phase 1, Track 2).
+# Gold pipeline for the e-commerce project.
 # Reads Silver tables (same catalog, "silver" schema), aggregates into
 # business-ready reporting tables in the "gold" schema.
-# See docs/roadmap/phase-1-ecommerce-project.md.
+# See docs/roadmap/phase-1-ecommerce.md.
 
 resources:
   pipelines:

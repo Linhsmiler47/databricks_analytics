@@ -8,7 +8,7 @@ bằng CREATE OR REPLACE TABLE là hợp lý nhất, không cần MERGE (không 
 để "hợp nhất" khi cả bảng luôn là bản mới nhất).
 
 Không làm sạch gì ở đây (đúng nguyên tắc Bronze) — giữ nguyên data lỗi,
-để Silver xử lý (xem docs/roadmap/phase-1-track2-ecommerce-project.md).
+để Silver xử lý (xem docs/roadmap/phase-1-ecommerce.md).
 
 Xem [Bài 13 — Delta Table + Job vs Streaming Table vs Materialized View]
 (docs/lessons/fundamentals/13-delta-table-job-vs-lakeflow.md) để biết vì

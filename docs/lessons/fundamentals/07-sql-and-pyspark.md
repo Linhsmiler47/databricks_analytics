@@ -45,5 +45,6 @@ sẽ đọc hiểu bên kia rất nhanh.
 - [tests/sample_taxis_test.py](../../../tests/sample_taxis_test.py) và
   [src/my_project_etl/transformations/sample_zones_my_project.py](../../../src/my_project_etl/transformations/sample_zones_my_project.py) —
   ví dụ PySpark thật (`groupBy`, `agg`, `sum`) đang chạy trong repo.
-- Bài tập viết CTE/window function thật: dùng khi làm Gold table ở
-  [roadmap/phase-1-track1-cdc-demo.md mục 1.5](../../roadmap/phase-1-track1-cdc-demo.md).
+- [src/ecomm_etl/scripts/refresh_silver.py](../../../src/ecomm_etl/scripts/refresh_silver.py) —
+  `MERGE INTO` thật (Delta API `DeltaTable.merge()`), join star-schema, đã
+  verify chạy ổn định — xem [roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md).

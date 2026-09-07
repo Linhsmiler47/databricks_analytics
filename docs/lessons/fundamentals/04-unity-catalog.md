@@ -84,15 +84,15 @@ thật sự không làm được (Free Edition giới hạn 1 workspace/account)
 
 ## Áp dụng vào project
 
-Repo này (phần data mẫu `nyctaxi` + case study CDC `customers`, Track 1)
-tách ở **tầng schema** — xem [databricks.yml](../../../databricks.yml): cả
-3 target (`dev`/`staging`/`prod`) đều `catalog: workspace`, chỉ khác
-`schema`. Đây là lựa chọn vì đơn giản, không phải giới hạn kỹ thuật.
+Demo `nyctaxi` (có sẵn từ template) tách ở **tầng schema** — xem
+[databricks.yml](../../../databricks.yml): cả 3 target (`dev`/`staging`/
+`prod`) đều `catalog: workspace`, chỉ khác `schema`. Đây là lựa chọn vì
+đơn giản, không phải giới hạn kỹ thuật.
 
-Project e-commerce (`fixtures/ecomm_raw/`, Track 2) tách ở **tầng
+Project e-commerce (`fixtures/ecomm_raw/`, project chính) tách ở **tầng
 catalog** — `ecomm_dev`/`ecomm_staging`/`ecomm_prod`, mỗi catalog có 3
 schema `bronze`/`silver`/`gold` bên trong, xem
-[roadmap/phase-1-track2-ecommerce-project.md](../../roadmap/phase-1-track2-ecommerce-project.md).
+[roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md).
 **Nếu chỉ nhìn riêng 1 catalog** (vd `ecomm_dev`) — đây chính xác là cấu
 trúc "1 catalog, 3 schema layer" thường gặp khi maintain 1 workspace prod
 có sẵn (tách ở tầng workspace, không tách ở tầng catalog nữa).

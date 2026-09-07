@@ -39,6 +39,6 @@ databricks-connect).
 ## Áp dụng vào project
 
 Cả 2 gotcha trên đã xảy ra thật với repo này. Gotcha #1 (schema not found)
-lặp lại ngay trong bước setup — xem
-[roadmap/phase-1-track1-cdc-demo.md mục 1.2](../../roadmap/phase-1-track1-cdc-demo.md).
+lặp lại ngay trong bước setup — xem [../../setup.md](../../setup.md) và
+[roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md).
 Gotcha #2 (đổi workspace) chỉ cần khi bạn thật sự đổi account/workspace.

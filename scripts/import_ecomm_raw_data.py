@@ -9,9 +9,6 @@ thật — dimension (brands, category, date, products, customers) + fact
 Gold quy mô lớn hơn (Auto Loader thật với nhiều file, star-schema join,
 data cleaning trên data thật có lỗi định dạng).
 
-KHÔNG thay thế fixtures/cdc_demo/ (bài tập CDC/SCD2 — cần file nhỏ để tự
-tay edit và soi từng dòng; dataset này quá lớn để làm việc đó).
-
 customers.csv được LỌC BỚT: chỉ giữ customer_id có xuất hiện trong
 order_items (300K → ~88K dòng) — không mất join nào vì order_items giữ
 nguyên 100%. products/brands/category/date giữ nguyên (đã gần như được

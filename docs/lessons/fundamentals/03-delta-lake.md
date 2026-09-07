@@ -42,7 +42,9 @@ là cơ chế nền cho các API cao cấp hơn như AUTO CDC (Lakeflow tự sin
 
 ## Áp dụng vào project
 
-`MERGE INTO` chính là cơ chế nằm bên dưới
-`dp.create_auto_cdc_from_snapshot_flow(...)` mà bạn dùng ở
-[roadmap/phase-1-track1-cdc-demo.md mục 1.5](../../roadmap/phase-1-track1-cdc-demo.md) —
-hiểu MERGE trước sẽ hiểu ngay AUTO CDC làm gì, không cần học thuộc lòng.
+`MERGE INTO` chính là cách `refresh_silver.py` cập nhật `silver_order_items`
+mỗi lần chạy (upsert theo khóa `order_id, item_seq`) — xem code thật đã
+verify chạy ổn định ở
+[roadmap/phase-1-ecommerce.md mục 2.4](../../roadmap/phase-1-ecommerce.md).
+Đây chính là pattern "ETL đêm rồi MERGE" — hiểu MERGE trước sẽ hiểu ngay
+code đó làm gì, không cần học thuộc lòng.

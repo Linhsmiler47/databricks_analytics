@@ -33,27 +33,30 @@ Catalog quản lý quyền/audit y hệt table, trước khi nó được xử l
 | Đọc lại **toàn bộ** file mỗi lần, kể cả file cũ đã xử lý rồi → chậm dần theo thời gian | **Auto Loader** (`cloudFiles`) tự nhớ file nào đã xử lý (qua checkpoint), lần sau chỉ đọc file **mới** |
 | Không có schema cố định, không time travel, không query nhanh bằng SQL chuẩn | Delta format = Parquet + transaction log, có schema, có version history |
 
-Đây chính là lý do bài tập 1.4 yêu cầu bạn upload `v2.csv` (snapshot thứ 2)
-rồi chạy lại pipeline: Bronze table có thêm dòng của `v2`, **không đọc lại
-`v1.csv`** — vì Auto Loader lưu checkpoint "đã xử lý file nào", không phải
-vì Spark "thông minh" tự đoán. Nếu bạn dùng `spark.read.csv()` thường
-(không phải Auto Loader), nó sẽ đọc lại **toàn bộ** thư mục mỗi lần —
-không incremental.
+Đây chính là lý do khi chạy pipeline `ecomm_bronze_pipeline` upload thêm
+1 file `order_items` mới (theo ngày) rồi chạy lại: Bronze table có thêm
+đúng dòng của file mới, **không đọc lại các file cũ** — vì Auto Loader
+lưu checkpoint "đã xử lý file nào", không phải vì Spark "thông minh" tự
+đoán. Nếu bạn dùng `spark.read.csv()` thường (không phải Auto Loader), nó
+sẽ đọc lại **toàn bộ** thư mục mỗi lần — không incremental.
 
-## Bonus: 2 kiểu CDC khác nhau (liên quan tới bài 1.5)
+## Bonus: 2 kiểu CDC khác nhau
 
 Auto Loader chỉ lo việc đưa file vào Bronze. Việc suy ra INSERT/UPDATE/
-DELETE ở tầng Silver có 2 cách tiếp cận khác hẳn nhau:
+DELETE ở tầng Silver (nếu cần track thay đổi, không chỉ append) có 2 cách
+tiếp cận khác hẳn nhau:
 
-- **Operation-log CDC** (`create_auto_cdc_flow`): nguồn đã có sẵn cột
+- **Operation-log CDC** (`dp.create_auto_cdc_flow`): nguồn đã có sẵn cột
   `operation` (INSERT/UPDATE/DELETE) — kiểu Debezium/Fivetran xuất ra.
-- **Snapshot-diff CDC** (`create_auto_cdc_from_snapshot_flow`): nguồn chỉ
-  là các bản chụp "trạng thái đầy đủ" tại nhiều thời điểm — Lakeflow tự so
-  sánh 2 bản chụp liền nhau theo `keys` để suy ra thay đổi, không cần cột
-  operation nào. Đây là cách case study trong repo dùng (bạn tự sửa tay
-  `customers.csv`, mỗi lần "chốt" là 1 snapshot mới) — mô phỏng đúng thực
-  tế thường gặp hơn: hệ thống nguồn (ERP, Excel export...) thường chỉ xuất
-  ra được "trạng thái hiện tại", không tự sinh log thay đổi.
+- **Snapshot-diff CDC** (`dp.create_auto_cdc_from_snapshot_flow`): nguồn
+  chỉ là các bản chụp "trạng thái đầy đủ" tại nhiều thời điểm — Lakeflow
+  tự so sánh 2 bản chụp liền nhau theo `keys` để suy ra thay đổi, không
+  cần cột operation nào — sát thực tế hơn khi hệ thống nguồn (ERP, Excel
+  export...) thường chỉ xuất ra được "trạng thái hiện tại".
+
+(Repo này hiện dùng `MERGE INTO` viết tay cho `silver_order_items` — đơn
+giản hơn 2 API trên, hợp khi bạn tự kiểm soát toàn bộ logic qua script;
+xem [Bài 13](13-delta-table-job-vs-lakeflow.md).)
 
 ## Ghép lại toàn bộ lý do
 
@@ -70,9 +73,9 @@ liệu tăng dần theo thời gian**.
 
 ## Áp dụng vào project
 
-- [roadmap/phase-1-track1-cdc-demo.md mục 1.4](../../roadmap/phase-1-track1-cdc-demo.md) —
-  đúng 3 chặng này bằng code thật (`CREATE VOLUME` → `databricks fs cp` →
-  `@dp.table` + `cloudFiles`).
+- [roadmap/phase-1-ecommerce.md mục 2.3](../../roadmap/phase-1-ecommerce.md) —
+  đúng 3 chặng này bằng code thật đã verify (`CREATE VOLUME` → `databricks fs cp` →
+  `@dp.table` + `cloudFiles`, 92 file/ngày, 183K dòng).
 - Liên hệ [operations/02-asset-bundles-fundamentals.md](../operations/02-asset-bundles-fundamentals.md) —
   phần "Auto Loader không phải tính năng của bundle" giải thích rõ hơn ranh
   giới giữa deploy-time (bundle) và run-time (Auto Loader tự detect file).

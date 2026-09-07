@@ -47,7 +47,7 @@ sót — nhất là khi:
 ## Áp dụng vào project
 
 Repo này minh họa cả 2 hướng, cạnh nhau, chọn theo đúng khung quyết định:
-- [roadmap/phase-1-track2-ecommerce-project.md](../../roadmap/phase-1-track2-ecommerce-project.md)
+- [roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md)
   mục 2.3 — `bronze_order_items` (Streaming Table, case "nguồn liên tục")
   cạnh `refresh_bronze_dimensions.py` (Delta Table + Job, case "SAP nightly").
 - Mục 2.4 — `refresh_silver.py`, dùng `MERGE INTO` thật cho

@@ -4,7 +4,7 @@
 #   - refresh_bronze_dimensions:  plain script -> Delta Table (CREATE OR REPLACE)
 #   - refresh_silver:             plain script -> Delta Table (MERGE INTO cho fact)
 #   - refresh_gold:               Lakeflow pipeline (Materialized View, aggregate nặng)
-# Xem docs/roadmap/phase-1-track2-ecommerce-project.md và
+# Xem docs/roadmap/phase-1-ecommerce.md và
 # docs/lessons/fundamentals/13-delta-table-job-vs-lakeflow.md.
 
 resources:

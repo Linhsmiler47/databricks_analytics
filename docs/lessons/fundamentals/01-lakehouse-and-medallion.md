@@ -82,12 +82,12 @@ Databricks.
 
 ## Áp dụng vào project
 
-- Data mẫu hiện tại (`samples.nyctaxi.trips`) → `sample_trips_my_project`
+- Data mẫu `nyctaxi` (`samples.nyctaxi.trips`) → `sample_trips_my_project`
   (≈ Bronze/Silver gộp, chỉ copy nguyên) → `sample_zones_my_project`
   (≈ Gold, group by + sum) — xem [architecture.md](../../architecture.md).
   Pipeline này dùng data mẫu tĩnh nên **không cần** thực hành ACID/time
   travel/incremental — lý do cụ thể ở [Bài 11](11-acid-timetravel-incremental.md).
-- Bài tập thực hành đầy đủ 3 tầng **kèm CDC/SCD2 + incremental thật** (nơi
-  3 khái niệm ở Bài 11 mới thật sự có ý nghĩa): xem
-  [roadmap/phase-1-track1-cdc-demo.md](../../roadmap/phase-1-track1-cdc-demo.md)
-  mục 1.3–1.6.
+- Bài tập thực hành đầy đủ 3 tầng **trên data thật, đã build + verify chạy
+  thật** (nơi 3 khái niệm ở Bài 11 mới thật sự có ý nghĩa): xem
+  [roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md)
+  mục 2.3–2.5.

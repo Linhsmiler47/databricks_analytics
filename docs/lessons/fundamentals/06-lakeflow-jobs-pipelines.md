@@ -48,5 +48,7 @@ schedule, retry).
 - [resources/my_project_etl.pipeline.yml](../../../resources/my_project_etl.pipeline.yml) —
   Lakeflow declarative pipeline (khai báo transformation bằng `@dp.table`,
   không cần tự viết orchestration bên trong pipeline).
-- Bài tập nối chuỗi task thật: xem
-  [roadmap/phase-1-track1-cdc-demo.md mục 1.8](../../roadmap/phase-1-track1-cdc-demo.md).
+- [resources/ecomm_job.job.yml](../../../resources/ecomm_job.job.yml) —
+  ví dụ nối chuỗi 4 task thật (Bronze→Silver→Gold, trộn `pipeline_task`
+  lẫn `spark_python_task`), đã verify chạy `TERMINATED SUCCESS` ổn định —
+  xem [roadmap/phase-1-ecommerce.md](../../roadmap/phase-1-ecommerce.md).

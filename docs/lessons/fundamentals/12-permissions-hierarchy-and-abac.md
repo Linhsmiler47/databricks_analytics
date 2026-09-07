@@ -20,7 +20,7 @@ chế sẽ fail âm thầm trên nhiều loại bảng.
 **Owner** (người tạo object) luôn có quyền đầy đủ trên object đó ở bất kỳ
 tầng nào — GRANT/REVOKE nhắm vào người khác không lấy mất quyền của
 owner (xem gotcha thật ở
-[roadmap/phase-1-track2-ecommerce-project.md mục 2.7](../../roadmap/phase-1-track2-ecommerce-project.md)).
+[roadmap/phase-1-ecommerce.md mục 2.7](../../roadmap/phase-1-ecommerce.md)).
 
 ## Tầng 7 có 2 cơ chế — khác nhau ở loại bảng áp được
 
