@@ -1,0 +1,47 @@
+# Orchestration job for the e-commerce project. Áp đúng khung quyết định
+# (không ép 1 công nghệ cho mọi layer):
+#   - refresh_bronze_order_items: Lakeflow pipeline (Streaming Table, Auto Loader)
+#   - refresh_bronze_dimensions:  plain script -> Delta Table (CREATE OR REPLACE)
+#   - refresh_silver:             plain script -> Delta Table (MERGE INTO cho fact)
+#   - refresh_gold:               Lakeflow pipeline (Materialized View, aggregate nặng)
+# Xem docs/roadmap/phase-1-track2-ecommerce-project.md và
+# docs/lessons/fundamentals/13-delta-table-job-vs-lakeflow.md.
+
+resources:
+  jobs:
+    ecomm_job:
+      name: ecomm_job
+      tasks:
+        - task_key: refresh_bronze_order_items
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.ecomm_bronze_pipeline.id}
+
+        - task_key: refresh_bronze_dimensions
+          spark_python_task:
+            python_file: ../src/ecomm_etl/scripts/refresh_bronze_dimensions.py
+            parameters:
+              - "--catalog"
+              - "${var.ecomm_catalog}"
+          environment_key: default
+
+        - task_key: refresh_silver
+          depends_on:
+            - task_key: refresh_bronze_order_items
+            - task_key: refresh_bronze_dimensions
+          spark_python_task:
+            python_file: ../src/ecomm_etl/scripts/refresh_silver.py
+            parameters:
+              - "--catalog"
+              - "${var.ecomm_catalog}"
+          environment_key: default
+
+        - task_key: refresh_gold
+          depends_on:
+            - task_key: refresh_silver
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.ecomm_gold_pipeline.id}
+
+      environments:
+        - environment_key: default
+          spec:
+            environment_version: "4"

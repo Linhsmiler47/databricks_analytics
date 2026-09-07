@@ -1,0 +1,22 @@
+# Bronze pipeline for the e-commerce project — CHỈ order_items (fact table,
+# 92 file/ngày thật). Đúng khung quyết định: nguồn liên tục có file mới
+# đổ vào -> Streaming Table (Auto Loader) hợp lý, giống case "Kafka nhiều
+# event/giây" bạn nêu (khác về cường độ, giống về bản chất: xử lý tăng dần).
+#
+# 5 dimension đã CHUYỂN ra khỏi pipeline này — xem
+# src/ecomm_etl/scripts/refresh_bronze_dimensions.py (Delta Table + Job,
+# vì đó là data "export lại toàn bộ" mỗi lần, không hợp Streaming Table).
+# Xem docs/roadmap/phase-1-track2-ecommerce-project.md.
+
+resources:
+  pipelines:
+    ecomm_bronze_pipeline:
+      name: ecomm_bronze_pipeline
+      catalog: ${var.ecomm_catalog}
+      schema: bronze
+      serverless: true
+      configuration:
+        ecomm_catalog: ${var.ecomm_catalog}
+      libraries:
+        - glob:
+            include: ../src/ecomm_etl/transformations/bronze/**
